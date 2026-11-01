@@ -12,8 +12,10 @@ services:
     volumes:
       # Persist SQLite only — never mount over /app or the binary is wiped.
       - sqlite_data:/app/data
-    ports:
-      - "8080:8080"
+    # Coolify proxy reaches the container port; do NOT bind host ports
+    # (avoids "port is already allocated" on 8080/3000).
+    expose:
+      - "8080"
     networks:
       - ledger-net
     healthcheck:
@@ -40,8 +42,8 @@ services:
     environment:
       PORT: "3000"
       HOSTNAME: 0.0.0.0
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     depends_on:
       backend:
         condition: service_healthy
