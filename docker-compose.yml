@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+    build: ./backend
     container_name: ledger-backend
     restart: always
     environment:
@@ -17,9 +15,7 @@ services:
       - ledger-net
 
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     container_name: ledger-frontend
     restart: always
     environment:
