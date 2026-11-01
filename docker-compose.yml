@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: ledger-backend
     restart: always
     environment:
@@ -15,11 +17,13 @@ services:
       - ledger-net
 
   frontend:
-    build: ./ledger-app
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: ledger-frontend
     restart: always
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8080 # O tu dominio público de la API cuando lo configures
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
     ports:
       - "3000:3000"
     depends_on:
