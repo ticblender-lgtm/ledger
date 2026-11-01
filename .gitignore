@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# go backend
+/backend/ledger.db
+/backend/ledger.db-*
+/backend/ledger-api

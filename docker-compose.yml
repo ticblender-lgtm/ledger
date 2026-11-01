@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: ledger-backend
+    restart: always
+    environment:
+      - PORT=8080
+      - JWT_SECRET=cambia_esto_por_una_clave_muy_segura_y_larga
+      - CORS_ORIGINS=http://localhost:3000
+    volumes:
+      - sqlite_data:/app
+    networks:
+      - ledger-net
+
+  frontend:
+    build: ./ledger-app
+    container_name: ledger-frontend
+    restart: always
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080 # O tu dominio público de la API cuando lo configures
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - ledger-net
+
+volumes:
+  sqlite_data:
+
+networks:
+  ledger-net:
+    driver: bridge
