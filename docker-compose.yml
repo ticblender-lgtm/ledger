@@ -1,33 +1,50 @@
-version: '3.8'
-
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: ledger-backend
-    restart: always
+    restart: unless-stopped
     environment:
-      - PORT=8080
-      - JWT_SECRET=cambia_esto_por_una_clave_muy_segura_y_larga
-      - CORS_ORIGINS=http://localhost:3000
+      PORT: "8080"
+      DATABASE_PATH: /app/data/ledger.db
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-use-a-long-random-string}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
     volumes:
-      - sqlite_data:/app
+      # Persist SQLite only — never mount over /app or the binary is wiped.
+      - sqlite_data:/app/data
+    ports:
+      - "8080:8080"
     networks:
       - ledger-net
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://127.0.0.1:8080/api/health",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   frontend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ledger-frontend
-    restart: always
+      args:
+        # Must be the public URL of the API (browser-reachable), not Docker DNS.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    restart: unless-stopped
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8080
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - ledger-net
 

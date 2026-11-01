@@ -1,0 +1,10 @@
+ledger.db
+ledger.db-*
+ledger-api
+*.md
+.git
+.gitignore
+.DS_Store
+.env*
+Dockerfile
+.dockerignore
